@@ -1,57 +1,78 @@
 class Pass1:
-    def __init__(self):
-        self.mdt = ""
-        self.pp = 0
-        self.kp = 0
+    def __init__(self) -> None:
+        self.count_pp = 0
+        self.count_kp = 0
         self.mnt = ""
-        self.mdtp = 0
-        self.start = False
-        self.name = False
-        self.macro_name = ""
+        self.pntab = ""
+        self.mdtp = 1
+        self.kptp = 1
+        self.kpdt = ""
         self.macro_count = 0
-        self.lc = 0
+        self.ic = ""
+        self.mdt = ""
+        pass
 
     def process(self):
+        NEXT_MACRO = False
+        IS_START = False
+        with open("input.asm", "r") as file:
+            data = file.readlines()
+            for lines in data:
+                if lines.find('START') != -1 or IS_START == True:
+                    self.ic += lines
+                    IS_START = True
 
-        file = open("/workspaces/PICT_SEM_5/input.asm" , "r")
-        for lines in file:
-            word = lines.replace("\n", "").replace(
-                "'", "").replace(",", "").split(" ")
-            if word[0]=="MACRO":
-                pntab = []
-                self.macro_count+=1
-                self.start = True
-                self.name = True
-                self.mdtp = self.lc+1
-            
-            elif word[0] == "MEND":
-                self.start = False
-            else:
-                if self.name == True:
-                    self.mnt += f"\n{word[0]}"
-                    for i in range(1,len(word)):
-                        pntab.append(word[i].replace("&",""))
-                        self.pp+=1
-                    self.name = False
                 else:
-                    for i in range(len(word)):
-                        if word[i] in pntab:
-                            self.mdt+=f"(P,{pntab.index(word[i]) + 1})\n"
-                        else:
-                            self.mdt += f"{word[i]}\t"
-            self.lc+=1
-            
+                    word = lines.replace("&", "").replace(",", "").split()
+                    if NEXT_MACRO == True:
+                        self.count_kp = 0
+                        self.count_pp = 0
+                        macro_name = word[0]
+                        self.pntab += f"{macro_name}\t"
+                        for i in range(1, len(word)):
+                            if word[i].find("=") != -1:
+                                self.count_kp += 1
+                                parameter_name = word[i].partition("=")[0]
+                                given_name = word[i].partition('=')[2]
+                                self.pntab += parameter_name + "\t"
+                                self.kpdt += f"{parameter_name}\t{given_name}\n"
+                            else:
+                                self.pntab += word[i] + "\t"
+                                self.count_pp += 1
+                        self.pntab += "\n"
+                        self.mnt += f"{macro_name}\t{self.count_pp}\t{self.count_kp}\t{self.mdtp}\t{self.kptp}\n"
+                        self.kptp += self.count_kp
+                        NEXT_MACRO = False
+
+                    elif word[0] == 'MACRO':
+                        self.macro_count += 1
+                        NEXT_MACRO = True
+                        pass
+
+                    else:
+                        string = word[0] + "\t"
+                        parameters = self.pntab.split('\n')[self.macro_count-1].split()
+                        for i in range(1, len(word)):
+                            if word[i].find('=') != -1:
+                                string += word[i] + "\t"
+                            else:
+                                index = parameters.index(word[i])
+                                string += f"(P,{index})\t"
+                        self.mdtp += 1
+                        string += "\n"
+                        self.mdt += string
+
+        print("*"*8 + "MDT" + "*"*8)
+        print(self.mdt)
+        print("*"*8 + "MNT" + "*"*8)
+        print(self.mnt)
+        print("*"*8 + "PNTAB" + "*"*8)
+        print(self.pntab)
+        print("*"*8 + "KPDT" + "*"*8)
+        print(self.kpdt)
+        print("*"*8 + "IC" + "*"*8)
+        print(self.ic)
 
 
-
-        self.mnt += f"\t{self.pp}\t{self.kp}\t{self.mdtp}"
-        print("MNT",self.mnt)
-        print()
-        print("MDT\n",self.mdt)
-        print()
-            # print("Name",self.name)
-        print("Pntab\n",pntab)
-            # print(word)
-
-obj = Pass1()
-obj.process()
+test = Pass1()
+test.process()

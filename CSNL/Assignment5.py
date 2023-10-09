@@ -1,118 +1,73 @@
-import time
 import math
 
-class FlowControl:
-    def __init__(self, m):
-        self.mb = m
-        self.fs = 0
+def check_class(IP):
+    print("Your IP class:", end=" ")
+    first_oct = IP.find('.')
+    f_oct = IP[:first_oct]
 
-    def frame_size(self):
-        self.fs = 2 ** self.mb - 1
-        print("Frame Size ---->", self.fs)
+    if 0 <= int(f_oct) <= 127:
+        print("Class A")
+        print("Default subnetMask: 255.0.0.0")
+    elif 128 <= int(f_oct) <= 191:
+        print("Class B")
+        print("Default subnetMask: 255.255.0.0")
+    elif 192 <= int(f_oct) <= 224:
+        print("Class C")
+        print("Default subnetMask: 255.255.255.0")
+    elif 225 <= int(f_oct) <= 239:
+        print("Class D")
+        print("Default subnetMask: not defined")
+    elif 240 <= int(f_oct) <= 255:
+        print("Class E")
+        print("Default subnetMask: not defined")
 
-    def go_back(self):
-        i = 0
-        x = 0
-        cnt = 1
-        while self.mb != 0:
-            j = 0
-            k = 0
-            v = [0] * self.fs
-            while k != self.fs:
-                print("Frame", i, "Sent ---->")
-                time.sleep(1)
-                v[k] = i
-                k += 1
-                i += 1
-            v2 = [0] * self.fs
-            while j != self.fs:
-                if x == 5 and cnt == 1:
-                    v2[j] = -1
-                    j += 1
-                    x += 1
-                    cnt += 1
-                    continue
-                print("Frame", x, "Received ---->")
-                time.sleep(1)
-                v2[j] = x
-                j += 1
-                x += 1
-            flag = 0
-            for z in range(self.fs):
-                if v[z] == v2[z]:
-                    time.sleep(1)
-                    print("ACKNOWLEDGEMENT Received", v[z], "-->")
-                else:
-                    print("Retransmit From", v[z], "")
-                    i = v[z]
-                    x = v[z]
-                    flag = 1
-                    break
-            if flag:
-                pass
-            else:
-                print("Window Slided")
-                self.mb -= 1
+def count_bits(n):
+    count = 0
+    while n:
+        count += 1
+        n >>= 1
+    return count
 
-    def selective(self):
-        i = 0
-        x = 0
-        cnt = 1
-        while self.mb != 0:
-            j = 0
-            k = 0
-            v = [0] * self.fs
-            while k != self.fs:
-                print("Frame", i, "Sent ---->")
-                time.sleep(1)
-                v[k] = i
-                k += 1
-                i += 1
-            v2 = [0] * self.fs
-            while j != self.fs:
-                if x == 5 and cnt == 1:
-                    v2[j] = -1
-                    j += 1
-                    x += 1
-                    cnt += 1
-                    continue
-                print("Frame", x, "Received ---->")
-                time.sleep(1)
-                v2[j] = x
-                j += 1
-                x += 1
-            flag = 0
-            c = 0
-            for z in range(self.fs):
-                if v[z] == v2[z]:
-                    time.sleep(1)
-                    print("ACKNOWLEDGEMENT Received", v[z], "-->")
-                else:
-                    c = 1
-            if c == 1:
-                print("Retransmit", 5, "")
-                time.sleep(1)
-                print("Frame", 5, "SENT---->")
-                time.sleep(1)
-                print("Frame", 5, "RECEIVED---->")
-                time.sleep(1)
-                print("ACKNOWLEDGEMENT", 5, "SENT---->")
-            if flag:
-                pass
-            else:
-                print("Window Slided")
-                self.mb -= 1
+def create_subnet(IP, n):
+    # Only for class C
+    bit_to_transfer = math.ceil(math.log(n, 2))
 
-while True:
-    a = int(input("Enter Number of Bits--\n"))
-    f = FlowControl(a)
-    print("YOU WANT TO PERFORM\n1. GO BACK N\n2. SELECTIVE REPEAT\n3. Exit")
-    choice = int(input("Enter your choice (1/2/3): "))
-    if choice == 1:
-        f.frame_size()
-        f.go_back()
-    elif choice == 2:
-        f.frame_size()
-        f.selective()
-    elif choice == 3:
-        break
+    subnetted_mask = 0
+
+    for i in range(7, 7 - bit_to_transfer, -1):
+        subnetted_mask += 2**i
+
+    print("SubnettedMask:", f"255.255.255.{subnetted_mask}")
+
+    range_to_add = 2**(8 - bit_to_transfer)
+    print(range_to_add)
+    var_num = 0
+    print("\nYour range-->>")
+    third_dot = IP.rfind('.')
+    
+    three_oct = IP[:third_dot]
+    i = 0
+    for i in range(n):
+        print(f"{three_oct}.{var_num} - {three_oct}.{var_num + range_to_add - 1}")
+        var_num += range_to_add
+        var_num += 1
+
+    print("Unused subnets:")
+    for i in range(2**bit_to_transfer):
+        print(f"{three_oct}.{var_num} - {three_oct}.{var_num + range_to_add - 1}")
+        var_num += range_to_add
+        var_num += 1
+
+if __name__ == "__main__":
+    no_subnet = int(input("How many subnets to mask?\n"))
+    IP = input("Enter the IP: ")
+
+    check_class(IP)
+    create_subnet(IP, no_subnet)
+
+    print()
+    print()
+    
+    cmd = f"ping {IP}"
+    import os
+    os.system(cmd)

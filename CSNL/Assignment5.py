@@ -1,4 +1,5 @@
 import math
+import os
 
 def check_class(IP):
     print("Your IP class:", end=" ")
@@ -40,15 +41,15 @@ def create_subnet(IP, n):
     print("SubnettedMask:", f"255.255.255.{subnetted_mask}")
 
     range_to_add = 2**(8 - bit_to_transfer)
-    print(range_to_add)
+    print("Range to add:", range_to_add)
     var_num = 0
-    print("\nYour range-->>")
+    print("\nYour range:")
     third_dot = IP.rfind('.')
     
     three_oct = IP[:third_dot]
     i = 0
     for i in range(n):
-        print(f"{three_oct}.{var_num} - {three_oct}.{var_num + range_to_add - 1}")
+        print(f"Subnet {i + 1} -> {three_oct}.{var_num} - {three_oct}.{var_num + range_to_add - 1}")
         var_num += range_to_add
         var_num += 1
 
@@ -59,7 +60,7 @@ def create_subnet(IP, n):
         var_num += 1
 
 if __name__ == "__main__":
-    no_subnet = int(input("How many subnets to mask?\n"))
+    no_subnet = int(input("How many subnets to mask:\n"))
     IP = input("Enter the IP: ")
 
     check_class(IP)
@@ -67,7 +68,6 @@ if __name__ == "__main__":
 
     print()
     print()
-    
+
     cmd = f"ping {IP}"
-    import os
     os.system(cmd)

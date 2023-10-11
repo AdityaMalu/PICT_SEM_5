@@ -9,7 +9,7 @@ class FlowControl:
     def frame_size(self):
         self.fs = 2 ** self.mb - 1
         print("Frame Size ---->", self.fs)
-
+ 
     def go_back(self):
         i = 0
         x = 0

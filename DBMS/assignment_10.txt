@@ -1,0 +1,540 @@
+
+MongoDB shell version v4.2.22
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("96b872fa-2ea2-4d78-9b77-b98f3e8996fc") }
+MongoDB server version: 4.2.22
+Server has startup warnings: 
+2023-10-18T08:57:04.392+0530 I  STORAGE  [initandlisten] 
+2023-10-18T08:57:04.392+0530 I  STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+2023-10-18T08:57:04.392+0530 I  STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+2023-10-18T08:57:06.697+0530 I  CONTROL  [initandlisten] 
+2023-10-18T08:57:06.697+0530 I  CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2023-10-18T08:57:06.697+0530 I  CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2023-10-18T08:57:06.697+0530 I  CONTROL  [initandlisten] 
+---
+Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+and anyone you share the URL with. MongoDB may use this information to make product
+improvements and to suggest MongoDB products and deployment options to you.
+
+To enable free monitoring, run the following command: db.enableFreeMonitoring()
+To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+
+> use students
+switched to db students
+> db.students.find().explain("executionalStats")
+2023-10-18T09:03:05.517+0530 E  QUERY    [js] uncaught exception: Error: explain failed: {
+	"ok" : 0,
+	"errmsg" : "verbosity string must be one of {'queryPlanner', 'executionStats', 'allPlansExecution'}",
+	"code" : 9,
+	"codeName" : "FailedToParse"
+} :
+_getErrorWithCode@src/mongo/shell/utils.js:25:13
+throwOrReturn@src/mongo/shell/explainable.js:25:19
+constructor/this.finish@src/mongo/shell/explain_query.js:175:24
+DBQuery.prototype.explain@src/mongo/shell/query.js:514:12
+@(shell):1:1
+> use student
+switched to db student
+> use students
+switched to db students
+> db.students.find().explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "students.students",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 0,
+		"executionTimeMillis" : 21,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 0,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"nReturned" : 0,
+			"executionTimeMillisEstimate" : 10,
+			"works" : 2,
+			"advanced" : 0,
+			"needTime" : 1,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"direction" : "forward",
+			"docsExamined" : 0
+		}
+	},
+	"serverInfo" : {
+		"host" : "localhost.localdomain",
+		"port" : 27017,
+		"version" : "4.2.22",
+		"gitVersion" : "eef44cd56b1cc11e5771736fa6cb3077e0228be2"
+	},
+	"ok" : 1
+}
+> db.students.createIndex({name:1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1
+}
+> db.students.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "students.students"
+	},
+	{
+		"v" : 2,
+		"unique" : true,
+		"key" : {
+			"name" : 1,
+			"age" : 1
+		},
+		"name" : "name_1_age_1",
+		"ns" : "students.students"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : 1
+		},
+		"name" : "name_1",
+		"ns" : "students.students"
+	}
+]
+> db.students.dropIndex({name:1})
+{ "nIndexesWas" : 3, "ok" : 1 }
+> db.students.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "students.students"
+	},
+	{
+		"v" : 2,
+		"unique" : true,
+		"key" : {
+			"name" : 1,
+			"age" : 1
+		},
+		"name" : "name_1_age_1",
+		"ns" : "students.students"
+	}
+]
+> db.students.dropIndexes()
+{
+	"nIndexesWas" : 2,
+	"msg" : "non-_id indexes dropped for collection",
+	"ok" : 1
+}
+> db.students.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "students.students"
+	}
+]
+> db.students.createIndex({name:1,age:1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+> db.students.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "students.students"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : 1,
+			"age" : 1
+		},
+		"name" : "name_1_age_1",
+		"ns" : "students.students"
+	}
+]
+> db.students.createIndex({name:1,age:1},{unique:true})
+{
+	"ok" : 0,
+	"errmsg" : "Index with name: name_1_age_1 already exists with different options",
+	"code" : 85,
+	"codeName" : "IndexOptionsConflict"
+}
+> db.students.createIndex({name:2,age:2},{unique:true})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1
+}
+> db.students.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "students.students"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : 1,
+			"age" : 1
+		},
+		"name" : "name_1_age_1",
+		"ns" : "students.students"
+	},
+	{
+		"v" : 2,
+		"unique" : true,
+		"key" : {
+			"name" : 2,
+			"age" : 2
+		},
+		"name" : "name_2_age_2",
+		"ns" : "students.students"
+	}
+]
+> db.students.distinct("name")
+[ ]
+> db.students.distinct("1")
+[ ]
+> db.students.distinct("name_1_age_1")
+[ ]
+> db.students.distinct("name",{age:{$gt:20}})
+[ ]
+> db.students.aggregate([ {'$match' : { _id : {$in : [7, 8, 9, 10, 11, 12, 13, 14] }} } ,{"$group" : { _id : '$_id', name : {"$first" : "$name"}, sum : { $first : { $sum : ["$scores.score"] } }}}, {$sort : {sum : -1}}])
+> db.students.aggregate([ {'$match' : { _id : {$in : [7] }} },{$unwind : '$scores' }, {$sort : {sum : -1}}])
+> use assignment_10
+switched to db assignment_10
+> db.createCollection("Student")
+{ "ok" : 1 }
+> db.Student.insert({_id:1,rollNO:101,regNo:1001,name:"Samarth",dept:"Comp",marks:[95,90,92,91,93]})
+WriteResult({ "nInserted" : 1 })
+> db.Student.insert({_id:2,rollNO:102,regNo:1011,name:"More",dept:"Comp",marks:[91,94,89,85,92]})
+WriteResult({ "nInserted" : 1 })
+> db.Student.insert({_id:3,rollNO:103,regNo:1213,name:"Mihir",dept:"IT",marks:[80,85,100,94,92]})
+WriteResult({ "nInserted" : 1 })
+> db.Student.insert({_id:4,rollNO:104,regNo:1031,name:"Manavi",dept:"ENTC",marks:[94,99,93,91,97]})
+WriteResult({ "nInserted" : 1 })
+> db.Student.insert({_id:4,rollNO:105,regNo:1222,name:"Nandika",dept:"ENTC",marks:[84,81,90,88,92]})
+WriteResult({
+	"nInserted" : 0,
+	"writeError" : {
+		"code" : 11000,
+		"errmsg" : "E11000 duplicate key error collection: assignment_10.Student index: _id_ dup key: { _id: 4.0 }"
+	}
+})
+> db.Student.insert({_id:5,rollNO:105,regNo:1222,name:"Nandika",dept:"ENTC",marks:[84,81,90,88,92]})
+WriteResult({ "nInserted" : 1 })
+> db.student.find()
+> db.Student.find()
+{ "_id" : 1, "rollNO" : 101, "regNo" : 1001, "name" : "Samarth", "dept" : "Comp", "marks" : [ 95, 90, 92, 91, 93 ] }
+{ "_id" : 2, "rollNO" : 102, "regNo" : 1011, "name" : "More", "dept" : "Comp", "marks" : [ 91, 94, 89, 85, 92 ] }
+{ "_id" : 3, "rollNO" : 103, "regNo" : 1213, "name" : "Mihir", "dept" : "IT", "marks" : [ 80, 85, 100, 94, 92 ] }
+{ "_id" : 4, "rollNO" : 104, "regNo" : 1031, "name" : "Manavi", "dept" : "ENTC", "marks" : [ 94, 99, 93, 91, 97 ] }
+{ "_id" : 5, "rollNO" : 105, "regNo" : 1222, "name" : "Nandika", "dept" : "ENTC", "marks" : [ 84, 81, 90, 88, 92 ] }
+> db.Student.createIndex({rollNo:1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+> db.Student.explain("executionStats").find({rollNO:9})
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "assignment_10.Student",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"rollNO" : {
+				"$eq" : 9
+			}
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"rollNO" : {
+					"$eq" : 9
+				}
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 0,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 5,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"rollNO" : {
+					"$eq" : 9
+				}
+			},
+			"nReturned" : 0,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 7,
+			"advanced" : 0,
+			"needTime" : 6,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"direction" : "forward",
+			"docsExamined" : 5
+		}
+	},
+	"serverInfo" : {
+		"host" : "localhost.localdomain",
+		"port" : 27017,
+		"version" : "4.2.22",
+		"gitVersion" : "eef44cd56b1cc11e5771736fa6cb3077e0228be2"
+	},
+	"ok" : 1
+}
+> db.Student.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "assignment_10.Student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"rollNo" : 1
+		},
+		"name" : "rollNo_1",
+		"ns" : "assignment_10.Student"
+	}
+]
+> db.createIndex({"rollNo":1,"name" :1})
+2023-10-18T09:31:20.016+0530 E  QUERY    [js] uncaught exception: TypeError: db.createIndex is not a function :
+@(shell):1:1
+> db.Student.createIndex({"rollNo":1,"name" :1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1
+}
+> db.Student.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "assignment_10.Student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"rollNo" : 1
+		},
+		"name" : "rollNo_1",
+		"ns" : "assignment_10.Student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"rollNo" : 1,
+			"name" : 1
+		},
+		"name" : "rollNo_1_name_1",
+		"ns" : "assignment_10.Student"
+	}
+]
+> db.Student.explain("executionStats").find({regNo:1031})
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "assignment_10.Student",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"regNo" : {
+				"$eq" : 1031
+			}
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"regNo" : {
+					"$eq" : 1031
+				}
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 5,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"regNo" : {
+					"$eq" : 1031
+				}
+			},
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 7,
+			"advanced" : 1,
+			"needTime" : 5,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"direction" : "forward",
+			"docsExamined" : 5
+		}
+	},
+	"serverInfo" : {
+		"host" : "localhost.localdomain",
+		"port" : 27017,
+		"version" : "4.2.22",
+		"gitVersion" : "eef44cd56b1cc11e5771736fa6cb3077e0228be2"
+	},
+	"ok" : 1
+}
+> db.Student.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "assignment_10.Student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"rollNo" : 1
+		},
+		"name" : "rollNo_1",
+		"ns" : "assignment_10.Student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"rollNo" : 1,
+			"name" : 1
+		},
+  db.Student.aggregate([{$unwind:"$marks"},{$group^C"_id":""$rollNo","total_Score":{$sum:"$marks"}}},{$sort:{"total_Score":-1}}])
+
+
+> use assignment_10
+switched to db assignment_10
+> db.Student.aggregate([{$unwind:"$marks"},{$group:{"_id":"$rollNo","total_Score":{$sum:"$marks"}}}])
+{ "_id" : null, "total_Score" : 2272 }
+> db.Student.aggregate([{$unwind:"$marks"},{$group:{"_id":"$rollNo","total_Score":{$sum:"$marks"}}}])
+{ "_id" : null, "total_Score" : 2272 }
+> db.Student
+assignment_10.Student
+> db.Student.aggregate([{$unwind:"$marks"},{$group:{"_id":"$rollNo","total_Score":{$sum:"$marks"}}}])
+{ "_id" : null, "total_Score" : 2272 }
+> db.Student.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "assignment_10.Student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"rollNo" : 1
+		},
+		"name" : "rollNo_1",
+		"ns" : "assignment_10.Student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"rollNo" : 1,
+			"name" : 1
+		},
+		"name" : "rollNo_1_name_1",
+		"ns" : "assignment_10.Student"
+	}
+]
+> db.Student.find()
+{ "_id" : 1, "rollNO" : 101, "regNo" : 1001, "name" : "Samarth", "dept" : "Comp", "marks" : [ 95, 90, 92, 91, 93 ] }
+{ "_id" : 2, "rollNO" : 102, "regNo" : 1011, "name" : "More", "dept" : "Comp", "marks" : [ 91, 94, 89, 85, 92 ] }
+{ "_id" : 3, "rollNO" : 103, "regNo" : 1213, "name" : "Mihir", "dept" : "IT", "marks" : [ 80, 85, 100, 94, 92 ] }
+{ "_id" : 4, "rollNO" : 104, "regNo" : 1031, "name" : "Manavi", "dept" : "ENTC", "marks" : [ 94, 99, 93, 91, 97 ] }
+{ "_id" : 5, "rollNO" : 105, "regNo" : 1222, "name" : "Nandika", "dept" : "ENTC", "marks" : [ 84, 81, 90, 88, 92 ] }
+> db.Student.aggregate([{$group:{"_id":"$rollNo","total_Score":{$sum:"$marks"}}},{$unwind:"$marks"}])
+> db.Student.aggregate([{$unwind:"$marks"},{$group:{_id:"$rollNo","total_Score":{$sum:"$marks"}}}])
+{ "_id" : null, "total_Score" : 2272 }
+> db.Student.aggregate([{$match:{"marks":{$gt:90}}}]);
+{ "_id" : 1, "rollNO" : 101, "regNo" : 1001, "name" : "Samarth", "dept" : "Comp", "marks" : [ 95, 90, 92, 91, 93 ] }
+{ "_id" : 2, "rollNO" : 102, "regNo" : 1011, "name" : "More", "dept" : "Comp", "marks" : [ 91, 94, 89, 85, 92 ] }
+{ "_id" : 3, "rollNO" : 103, "regNo" : 1213, "name" : "Mihir", "dept" : "IT", "marks" : [ 80, 85, 100, 94, 92 ] }
+{ "_id" : 4, "rollNO" : 104, "regNo" : 1031, "name" : "Manavi", "dept" : "ENTC", "marks" : [ 94, 99, 93, 91, 97 ] }
+{ "_id" : 5, "rollNO" : 105, "regNo" : 1222, "name" : "Nandika", "dept" : "ENTC", "marks" : [ 84, 81, 90, 88, 92 ] }
+> db.Student.aggregate([{$match:{"marks":{$lt:90}}}]);
+{ "_id" : 2, "rollNO" : 102, "regNo" : 1011, "name" : "More", "dept" : "Comp", "marks" : [ 91, 94, 89, 85, 92 ] }
+{ "_id" : 3, "rollNO" : 103, "regNo" : 1213, "name" : "Mihir", "dept" : "IT", "marks" : [ 80, 85, 100, 94, 92 ] }
+{ "_id" : 5, "rollNO" : 105, "regNo" : 1222, "name" : "Nandika", "dept" : "ENTC", "marks" : [ 84, 81, 90, 88, 92 ] }
+> db.Student.aggregate([{$match:{"name":{$eq:"Samarth"}}}]);
+{ "_id" : 1, "rollNO" : 101, "regNo" : 1001, "name" : "Samarth", "dept" : "Comp", "marks" : [ 95, 90, 92, 91, 93 ] }
+> db.Student.aggregate([{$match:{"dept":{$eq:"Comp"}}}]);
+{ "_id" : 1, "rollNO" : 101, "regNo" : 1001, "name" : "Samarth", "dept" : "Comp", "marks" : [ 95, 90, 92, 91, 93 ] }
+{ "_id" : 2, "rollNO" : 102, "regNo" : 1011, "name" : "More", "dept" : "Comp", "marks" : [ 91, 94, 89, 85, 92 ] }
+> 
+

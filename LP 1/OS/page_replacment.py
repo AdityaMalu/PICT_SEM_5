@@ -62,6 +62,7 @@ def optimal_page_replacement(pages, capacity):
             page_faults += 1
 
             if len(page_queue) == capacity:
+
                 farthest_used = -1
                 farthest_idx = -1
 

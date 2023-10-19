@@ -19,7 +19,7 @@ def fifo_page_replacement(pages, capacity):
             page_queue.append(page)
             page_set.add(page)
 
-        # Print the current page queue
+        
         print("Current Page Queue (FIFO):", list(page_queue))
 
     return page_faults, page_hits
@@ -33,7 +33,6 @@ def lru_page_replacement(pages, capacity):
     for page in pages:
         if page in page_set:
             page_hits += 1
-            # Move the page to the end to mark it as the most recently used
             page_queue.remove(page)
             page_queue.append(page)
         else:
@@ -46,7 +45,6 @@ def lru_page_replacement(pages, capacity):
             page_queue.append(page)
             page_set.add(page)
 
-        # Print the current page queue
         print("Current Page Queue (LRU):", list(page_queue))
 
     return page_faults, page_hits
@@ -64,7 +62,6 @@ def optimal_page_replacement(pages, capacity):
             page_faults += 1
 
             if len(page_queue) == capacity:
-                # Find the page in the queue that won't be used for the longest time
                 farthest_used = -1
                 farthest_idx = -1
 
@@ -75,7 +72,6 @@ def optimal_page_replacement(pages, capacity):
                         break
 
                 if farthest_used == -1:
-                    # If a page is not found in future references, remove the first page
                     farthest_used = page_queue[0]
 
                 page_queue.remove(farthest_used)
@@ -84,7 +80,6 @@ def optimal_page_replacement(pages, capacity):
             page_queue.append(page)
             page_set.add(page)
 
-        # Print the current page queue
         print("Current Page Queue (Optimal):", list(page_queue))
 
     return page_faults, page_hits

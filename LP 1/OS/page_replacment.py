@@ -86,20 +86,45 @@ def optimal_page_replacement(pages, capacity):
     return page_faults, page_hits
 
 if __name__ == "__main__":
-    pages = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
-    capacity = 3
+    # pages = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
+    pages = [int(page) for page in input("Enter the page reference sequence: ").split()]
+    capacity = int(input("Enter the capacity of the page frame: "))
 
     print("Input Page Reference Sequence:", pages)
     print("Number of Frames (Capacity):", capacity)
+    flag = True
 
-    fifo_faults, fifo_hits = fifo_page_replacement(pages, capacity)
-    print("Total Page Faults (FIFO):", fifo_faults)
-    print("Total Page Hits (FIFO):", fifo_hits)
+    while flag:
+        n = int(input("Enter 1 for FIFO, 2 for LRU, 3 for Optimal, 4 for exit: "))
 
-    lru_faults, lru_hits = lru_page_replacement(pages, capacity)
-    print("Total Page Faults (LRU):", lru_faults)
-    print("Total Page Hits (LRU):", lru_hits)
+        if n == 1:
+            fifo_faults, fifo_hits = fifo_page_replacement(pages, capacity)
+            print("Total Page Faults (FIFO):", fifo_faults)
+            print("Total Page Hits (FIFO):", fifo_hits)
+            print()
+        elif n == 2:
+            lru_faults, lru_hits = lru_page_replacement(pages, capacity)
+            print("Total Page Faults (LRU):", lru_faults)
+            print("Total Page Hits (LRU):", lru_hits)
+            print()
+        elif n == 3:
+            optimal_faults, optimal_hits = optimal_page_replacement(pages, capacity)
+            print("Total Page Faults (Optimal):", optimal_faults)
+            print("Total Page Hits (Optimal):", optimal_hits)
+            print()
+        elif n == 4:
+            flag = False
+        else:
+            print("Invalid Input")
+            print()
+    # fifo_faults, fifo_hits = fifo_page_replacement(pages, capacity)
+    # print("Total Page Faults (FIFO):", fifo_faults)
+    # print("Total Page Hits (FIFO):", fifo_hits)
 
-    optimal_faults, optimal_hits = optimal_page_replacement(pages, capacity)
-    print("Total Page Faults (Optimal):", optimal_faults)
-    print("Total Page Hits (Optimal):", optimal_hits)
+    # lru_faults, lru_hits = lru_page_replacement(pages, capacity)
+    # print("Total Page Faults (LRU):", lru_faults)
+    # print("Total Page Hits (LRU):", lru_hits)
+
+    # optimal_faults, optimal_hits = optimal_page_replacement(pages, capacity)
+    # print("Total Page Faults (Optimal):", optimal_faults)
+    # print("Total Page Hits (Optimal):", optimal_hits)

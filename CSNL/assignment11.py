@@ -9,8 +9,8 @@ def ip_to_url(ip_address):
 
 def url_to_ip(url):
     try:
-        ip = socket.gethostbyname(url)
-        return ip
+        ip_list = [addrinfo[4][0] for addrinfo in socket.getaddrinfo(url, None)]
+        return ip_list
     except socket.gaierror:
         return "Could not resolve the URL to an IP address."
 
@@ -29,7 +29,10 @@ while True:
     elif choice == '2':
         url = input("Enter a URL: ")
         result = url_to_ip(url)
-        print("IP address for URL", url, "is:", result)
+        if isinstance(result, list):
+            print("IP addresses for URL", url, "are:", ", ".join(result))
+        else:
+            print(result)
     elif choice == '3':
         break
     else:

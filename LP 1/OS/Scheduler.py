@@ -78,10 +78,15 @@ class Scheduler:
         self.avg_waiting_time = total_waiting_time / (num_completed_jobs if num_completed_jobs > 0 else 1)
         self.calculate_total_burst_time()
 
-    def execute_job(self, job):
-        self.time = max(self.time, job.arrival_time)
-        self.print_job_execution(job)
-        self.time += job.burst_time
+    def execute_job(self, job, time_executed=None):
+        if time_executed is not None:
+            self.time += time_executed
+            job.remaining_time -= time_executed
+            self.print_job_execution(job, time_executed)
+        else:
+            self.time = max(self.time, job.arrival_time)
+            self.print_job_execution(job)
+            self.time += job.burst_time
 
     def print_job_execution(self, job):
         print(f"Time={self.time}, Executing {job}")

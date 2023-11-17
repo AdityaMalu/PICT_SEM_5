@@ -29,10 +29,11 @@ class Scheduler:
         self.avg_waiting_time = total_waiting_time / len(self.queue)
         self.calculate_total_burst_time()
 
-    def sjf_preemptive(self):
+     def sjf_preemptive(self):
         temp_queue = self.queue[:]
         temp_queue.sort(key=lambda job: (job.arrival_time, job.burst_time))
 
+        total_waiting_time = 0
         while temp_queue:
             job = temp_queue[0]
             temp_queue = temp_queue[1:]
@@ -42,9 +43,14 @@ class Scheduler:
 
             time_executed = min(job.remaining_time, temp_queue[0].arrival_time - self.time) if temp_queue else job.remaining_time
             self.execute_job(job, time_executed)
+            total_waiting_time += self.time - job.arrival_time
 
             if job.remaining_time > 0:
                 temp_queue.append(job)
+
+        num_completed_jobs = len(self.queue) - len(temp_queue)
+        self.avg_waiting_time = total_waiting_time / (num_completed_jobs if num_completed_jobs > 0 else 1)
+        self.calculate_total_burst_time()
 
     def priority_non_preemptive(self):
         self.queue.sort(key=lambda job: job.arrival_time)
